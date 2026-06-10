@@ -335,7 +335,7 @@ describe.each(testScenarios)('$description', ({ appName, options, setup }) => {
 
     test('should run only necessary commands', () => {
       expect(spawnMock).toHaveBeenCalledTimes(
-        6 + actions.length * 3 + (options.isNew ? 0 : 1) + (options.access === 'public' ? 3 : 0),
+        7 + actions.length * 3 + (options.isNew ? 0 : 1) + (options.access === 'public' ? 3 : 0),
       )
     })
 
@@ -410,6 +410,10 @@ describe.each(testScenarios)('$description', ({ appName, options, setup }) => {
         'delete_branch_on_merge=true',
         '-F',
         'allow_update_branch=true',
+        '-F',
+        'has_wiki=false',
+        '-F',
+        'has_projects=false',
         '--silent',
       ])
 
@@ -456,6 +460,20 @@ describe.each(testScenarios)('$description', ({ appName, options, setup }) => {
           '--silent',
         ])
       }
+
+      expectSpawnToHaveBeenNthCalledWith('gh', [
+        'api',
+        '--method',
+        'PUT',
+        '-H',
+        'Accept: application/vnd.github+json',
+        `/repos/${USER_NAME}/${appName}/subscription`,
+        '-F',
+        'subscribed=true',
+        '-F',
+        'ignored=false',
+        '--silent',
+      ])
     })
 
     test('should stage new or updated files', () => {

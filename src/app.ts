@@ -10,6 +10,7 @@ import {
   updateRepositoryActionPermissions,
   updateRepositorySettings,
   updateRepositoryWorkflowPermissions,
+  watchRepository,
 } from './libs/github'
 import { mergePkgs, parsePkg, setPkgDependenciesToLatest, setPkgAccess, sortPkg } from './libs/pkg'
 import { installDependencies, runPackageManagerCommand } from './libs/pm'
@@ -199,6 +200,8 @@ async function updateGitHubRepositorySettings(appName: string, access: AppOption
   await updateRepositorySettings(repoIdentifier, [
     ['delete_branch_on_merge', true],
     ['allow_update_branch', true],
+    ['has_wiki', false],
+    ['has_projects', false],
   ])
 
   if (access === 'public') {
@@ -213,6 +216,8 @@ async function updateGitHubRepositorySettings(appName: string, access: AppOption
       ['sha_pinning_required', true],
     ])
   }
+
+  await watchRepository(repoIdentifier)
 }
 
 async function readAppFile(appPath: string, filePath: string): Promise<string | undefined> {
